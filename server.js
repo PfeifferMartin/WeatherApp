@@ -2,6 +2,7 @@ const express = require("express");
 const https = require("https");
 const path = require("path");
 const bodyParser = require("body-parser");
+const axios = require('axios');
 
 const port = 3000;
 const app = express();
@@ -33,13 +34,15 @@ app.get("/", function (req, res) {
   res.render("index", { showWeatherCards: showWeatherCards });
 });
 
-app.post("/", function (req, res) {
+app.post("/", async function (req, res) {
 
   if (req.body.inputCityName != null && req.body.inputCityName != "") {
-
-  }else
-    res.redirect("/");
+    weatherForecastForNext5Days = await getWeatherForNext5Days(req.body.inputCityName);
+  }
+  res.redirect("/");
 });
+
+
 
 
 /*-------------*/
@@ -54,11 +57,10 @@ async function getWeatherForNext5Days(cityName) {
   //get Data form OpenWeather.org
   try {
     weatherForecast = await axios.get(openWeatherUrl);
-    console.log(weatherForecast);
   } catch (err) {
     console.error(err);
   }
 
-  return weatherForecast;
+  return weatherForecast.data;
 
 }
