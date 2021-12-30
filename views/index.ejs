@@ -31,16 +31,15 @@
 
     <% if(showWeatherCards === true){ %> 
     <div class="row">
-        <% for (let index = 0; index < 5; index++) { %>
         <div class="col-sm-2 mx-auto">
             <div class="card">
-                <img class="card-img-top" src="textasd" alt="Can't load Weather icon">
+                <img class="card-img-top" src="http://openweathermap.org/img/w/<%= icon %>.png" alt="Can't load Weather icon">
                 <div class="card-body">
                     <p class="card-text">Temperature Placholder</p>
                 </div>
             </div>
         </div>
-        <%  } %>
+
     </div>
     <% } %> 
 
