@@ -26,46 +26,55 @@ app.listen(port, function () {
 app.get("/", function (req, res) {
   var showWeatherCards = false;
   var foreCast = weatherForecastForNext5Days;
-  var icons = "";
-  var dates = "";
-  var temps = "";
 
   var widgetData = {
     date: "",
     temp: "",
     icon: ""
   };
-  var widgetDataRows = [];
-  var widgetDataEntries = [];
+
+  var widgetDataRow = {};
+  var widgetDataRowKey = "widgetDataRow";
+  widgetDataRow[widgetDataRowKey] = [];
+
+  var widgetDataEntries = {};
+  var widgetDataEntriesKey = "widgetDataEntries";
+  widgetDataEntries[widgetDataEntriesKey] = [];
+
+
 
   if (foreCast != null && foreCast != "") {
     showWeatherCards = true;
     weatherForecastForNext5Days = null; // set null in case of refresh
     var dateEquals = "";
     for (let index = 0; index < foreCast.list.length; index++) {
-      widgetData.date = foreCast.list[index].dt_txt.split(" ",1)[0];
+      widgetData.date = foreCast.list[index].dt_txt.split(" ", 1)[0];
       widgetData.temp = foreCast.list[index].main.temp;
       widgetData.icon = foreCast.list[index].weather[0].icon;
 
-      if(dateEquals != widgetData.date){
-        if(dateEquals != ""){
-          widgetDataEntries.push(JSON.parse(JSON.stringify(widgetDataRows)));
-          widgetDataRows = [];
-        }else
-          widgetDataRows.push(JSON.parse(JSON.stringify(widgetData)));
+
+      if (dateEquals != widgetData.date) {
+        if (dateEquals != "") {
+          widgetDataEntries[widgetDataEntriesKey].push(JSON.parse(JSON.stringify(widgetDataRow)));
+          widgetDataRow = {};
+          widgetDataRow[widgetDataRowKey] = [];
+          widgetDataRow[widgetDataRowKey].push(JSON.parse(JSON.stringify(widgetData)));
+        } else
+          widgetDataRow[widgetDataRowKey].push(JSON.parse(JSON.stringify(widgetData)));
 
         dateEquals = widgetData.date;
-      }else{
-        widgetDataRows.push(JSON.parse(JSON.stringify(widgetData)));
+      } else {
+        widgetDataRow[widgetDataRowKey].push(JSON.parse(JSON.stringify(widgetData)));
       }
     }
   }
+  
+  res.render("index",
+    {
+      showWeatherCards: showWeatherCards,
+      widgetDataEntries: widgetDataEntries
+    });
 
-  res.render("index", 
-  { showWeatherCards: showWeatherCards, 
-    icon: icons, 
-    widgetDataEntries: widgetDataEntries });
-    
 });
 
 app.post("/", async function (req, res) {
